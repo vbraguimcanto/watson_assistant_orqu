@@ -1,4 +1,12 @@
-# IF DEPLOYING AT IKS:
+# Exemplo de orquestrador Python para Watson Assistant
+
+Inclui:
+
+* Integração com Redis (IBM Cloud), para armazenamento de metadados sobre a sessão dos usuários com o Bot
+
+* Integração com Facebook (via Webhook)
+
+# IF DEPLOYING AT IKS (IBM Kubernetes Service):
 
 ## If you use the IBM-provided wildcard Ingress domain:
 
