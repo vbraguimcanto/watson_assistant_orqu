@@ -1,0 +1,60 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: flask-server
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: flask-server-deployment
+        version: v1
+    spec:
+      containers:
+      - name: flask-server
+        image: <registry-address:image:version>
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 5000
+        env:
+          - name: HOST_IP
+            value: <iks-cluster-name>-<hash>.<region>.containers.appdomain.cloud
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-server-service
+spec:
+  ports:
+  - port: 5000
+    targetPort: 5000
+    nodePort: 32000
+    name: http
+  type: NodePort
+  selector:
+    name: flask-server-deployment
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.bluemix.net/redirect-to-https: "True"
+  name: ingress
+spec:
+  tls:
+    - hosts:
+        - <iks-cluster-name>-<hash>.<region>.containers.appdomain.cloud
+      secretName: <secret>
+  rules:
+    - host: <iks-cluster-name>-<hash>.<region>.containers.appdomain.cloud
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: flask-server
+              servicePort: 5000
+              
